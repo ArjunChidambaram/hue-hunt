@@ -237,28 +237,9 @@ export default function Camera({ color, existingScore, initialFile, onDone }: Pr
 
         {/* Buttons */}
         <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {passed ? (
-            <button onClick={onDone} className="btn-primary">Done ✓</button>
-          ) : (
-            <button onClick={triggerCamera} className="btn-primary">Try Again</button>
-          )}
-
-          {/* Share — shown when score is accepted */}
+          <button onClick={triggerCamera} className="btn-primary">Try Again</button>
           {passed && grid && (
-            <button onClick={onShare} className="btn-secondary">
-              Share result
-            </button>
-          )}
-
-          {passed && (
-            <button onClick={triggerCamera} style={{
-              display: 'block', width: '100%',
-              padding: '10px', background: 'none', border: 'none',
-              color: 'var(--fg-muted)', fontSize: 14, cursor: 'pointer',
-              textDecoration: 'underline', textDecorationColor: 'var(--border)',
-            }}>
-              Try again for a better score
-            </button>
+            <button onClick={onShare} className="btn-secondary">Share</button>
           )}
         </div>
       </div>

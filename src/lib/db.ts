@@ -67,11 +67,13 @@ async function dbKeys(): Promise<string[]> {
 
 // ─── Finds (permanent) ────────────────────────────────────
 
-export async function saveFindIfBetter(find: Find): Promise<void> {
+export async function saveFindIfBetter(find: Find): Promise<boolean> {
   const existing = await dbGet<Find>(`find:${find.date}`)
   if (!existing || find.matchScore > existing.matchScore) {
     await dbSet(`find:${find.date}`, find)
+    return true   // new best — caller should also save the photo
   }
+  return false
 }
 
 export async function getTodayFind(): Promise<Find | undefined> {

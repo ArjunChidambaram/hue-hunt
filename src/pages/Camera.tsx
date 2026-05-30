@@ -79,8 +79,8 @@ export default function Camera({ color, existingScore, initialFile, onDone }: Pr
           grid,
           pHash,
         }
-        await saveFindIfBetter(find)
-        await saveTodayPhoto(file, pHash)
+        const isNewBestFind = await saveFindIfBetter(find)
+        if (isNewBestFind) await saveTodayPhoto(file, pHash)
       }
 
       setScreen({ kind: 'result', score, objectUrl, brightness, grid })

@@ -167,41 +167,41 @@ export default function Today({ color, onFindIt, onHowToPlay, refreshKey }: Prop
           {color.hex}
         </p>
 
-        {/* Found: photo thumbnail + score + share */}
+        {/* Found: best photo of the day, full-width */}
         {foundToday && find && (
-          <div style={{
-            width: '100%', marginBottom: 24,
-            padding: '16px', background: 'var(--border)',
-            borderRadius: 'var(--radius-lg)',
-            display: 'flex', alignItems: 'center', gap: 14,
-          }}>
+          <div style={{ width: '100%', marginBottom: 24 }}>
             {photoUrl && (
-              <img
-                src={photoUrl}
-                alt="Your find"
-                style={{
-                  width: 60, height: 60, borderRadius: 'var(--radius)',
-                  objectFit: 'cover', flexShrink: 0,
-                }}
-              />
+              <div style={{ position: 'relative', borderRadius: 28, overflow: 'hidden', marginBottom: 10 }}>
+                <img
+                  src={photoUrl}
+                  alt="Your best find today"
+                  style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', display: 'block' }}
+                />
+                {/* Score badge */}
+                <div style={{
+                  position: 'absolute', bottom: 12, left: 12,
+                  background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)',
+                  color: '#fff', borderRadius: 'var(--radius-full)',
+                  padding: '4px 12px', fontSize: 13, fontWeight: 600,
+                }}>
+                  {pct}% match
+                </div>
+              </div>
             )}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontWeight: 600, fontSize: 15 }}>Found it! 🎉</p>
-              <p style={{ color: 'var(--fg-muted)', fontSize: 13, marginTop: 2 }}>
-                {pct}% match
-              </p>
+            {/* Share row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2px' }}>
+              <p style={{ fontWeight: 500, fontSize: 14, color: 'var(--fg-muted)' }}>Today's best photo</p>
+              <button
+                onClick={onShare}
+                style={{
+                  padding: '7px 16px', background: 'var(--fg)', color: 'var(--bg)',
+                  border: 'none', borderRadius: 'var(--radius-full)',
+                  fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                Share
+              </button>
             </div>
-            <button
-              onClick={onShare}
-              style={{
-                padding: '8px 14px', background: 'var(--fg)', color: 'var(--bg)',
-                border: 'none', borderRadius: 'var(--radius-full)',
-                fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                flexShrink: 0,
-              }}
-            >
-              Share
-            </button>
           </div>
         )}
 

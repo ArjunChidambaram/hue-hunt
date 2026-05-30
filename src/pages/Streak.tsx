@@ -35,6 +35,19 @@ export default function Streak() {
   const findMap = new Map(finds.map(f => [f.date, f]))
 
   const year = new Date().getUTCFullYear()
+
+  // Scroll grid so today is always visible — near the right edge with 4 cols of context
+  useEffect(() => {
+    if (loading || !containerRef.current) return
+    const yrStart = new Date(Date.UTC(year, 0, 1))
+    const dow = (yrStart.getUTCDay() + 6) % 7
+    const todayDt = new Date(today + 'T00:00:00Z')
+    const doy = Math.floor((todayDt.getTime() - yrStart.getTime()) / (1000 * 60 * 60 * 24))
+    const todayCol = Math.floor((dow + doy) / 7)
+    const colWidth = 10 + 2  // CELL + GAP
+    containerRef.current.scrollLeft = Math.max(0, todayCol * colWidth - containerRef.current.clientWidth + 4 * colWidth)
+  }, [loading, today, year])
+
   const yearStart = new Date(Date.UTC(year, 0, 1))
   const startDow = (yearStart.getUTCDay() + 6) % 7
   const totalCells = 53 * 7

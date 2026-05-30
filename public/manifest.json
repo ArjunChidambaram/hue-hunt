@@ -2,7 +2,7 @@
   "name": "Hue Hunt",
   "short_name": "Hue Hunt",
   "description": "Find today's color in the real world. A daily color scavenger hunt.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#FAFAF8",
   "theme_color": "#FAFAF8",

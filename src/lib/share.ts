@@ -12,7 +12,7 @@ export function generateShareText(
     .join('\n')
 
   return [
-    '🎨 Color of the Day',
+    '🎨 Hue Hunt',
     '',
     `${emoji} ${color.name}`,
     '',
@@ -21,7 +21,7 @@ export function generateShareText(
     '',
     grid,
     '',
-    'coloroftheday.app',
+    'arjunchidambaram.github.io/hue-hunt',
   ].join('\n')
 }
 

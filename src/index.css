@@ -1,0 +1,189 @@
+/* ─── Design Tokens ─────────────────────────────────────── */
+:root {
+  --bg: #FAFAF8;
+  --fg: #1A1A1A;
+  --fg-muted: #888888;
+  --fg-subtle: #BBBBBB;
+  --border: #E5E5E5;
+  --border-strong: #CCCCCC;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+
+  --nav-height: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Opacity-dependent tokens (can't use semi-transparent CSS vars directly) */
+  --nav-bg: rgba(250, 250, 248, 0.95);
+  --icon-tint: rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111110;
+    --fg: #F5F4F0;
+    --fg-muted: #8A8A88;
+    --fg-subtle: #484846;
+    --border: #2C2C2A;
+    --border-strong: #3C3C3A;
+    --nav-bg: rgba(17, 17, 16, 0.95);
+    --icon-tint: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* ─── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior: none;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Typography ─────────────────────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+/* ─── Scrollable content area ────────────────────────────── */
+.page {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 16px);
+}
+
+.page--no-nav {
+  padding-bottom: 0;
+}
+
+/* ─── Buttons ────────────────────────────────────────────── */
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 16px 24px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary:active {
+  opacity: 0.8;
+}
+
+.btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  background: transparent;
+  color: var(--fg);
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-strong);
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-secondary:active {
+  background: var(--border);
+}
+
+/* ─── Utilities ──────────────────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+
+/* ─── Desktop gate ───────────────────────────────────────── */
+.desktop-gate {
+  display: none;
+}
+@media (min-width: 768px) {
+  .desktop-gate {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 9999;
+    padding: 40px;
+    text-align: center;
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 currentColor; }
+  70%  { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out both;
+}

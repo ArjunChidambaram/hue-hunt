@@ -170,28 +170,51 @@ export default function Camera({ color, existingScore, initialFile, onDone }: Pr
       <div style={{ flex: 1, padding: '24px 24px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {passed ? (
-          /* ── Accepted: big tick in the day's color */
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <div style={{
-              width: 100, height: 100, borderRadius: '50%',
-              background: color.hex,
-              boxShadow: `0 6px 24px ${color.hex}66`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                <path d="M10 25 L20 35 L38 14" stroke="white" strokeWidth="4.5"
-                  strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+          /* ── Accepted ── */
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+
+            {/* Colour swatch (rounded sq) + name */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: 14,
+                background: color.hex, boxShadow: `0 4px 16px ${color.hex}55`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
+                  <path d="M10 25 L20 35 L38 14" stroke="white" strokeWidth="5"
+                    strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: 18, fontWeight: 400, lineHeight: 1.2 }}>
+                  {color.name}
+                </p>
+                <p style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--fg-muted)', marginTop: 2 }}>
+                  {color.hex}
+                </p>
+              </div>
             </div>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: 20, fontWeight: 400 }}>
-              {color.name}
-            </p>
+
+            {/* Score meter + 5×5 grid side by side */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+              <ScoreRing score={score} size={100} animate />
+              {grid && <MatchGrid grid={grid} colorHex={color.hex} />}
+            </div>
+
+            {/* New best banner */}
             {isNewBest && (
-              <p style={{ color: '#4CAF50', fontSize: 13, fontWeight: 500 }}>New best score! ⬆️</p>
+              <div style={{
+                background: '#4CAF5018', color: '#3a9e3a',
+                borderRadius: 'var(--radius-full)', padding: '6px 18px',
+                fontSize: 13, fontWeight: 600,
+              }}>
+                🏆 New best: {Math.round(score * 100)}%
+              </div>
             )}
           </div>
+
         ) : (
-          /* ── Rejected: show score ring so they know how far off they are */
+          /* ── Rejected ── */
           <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
               <ScoreRing score={score} size={110} animate />
@@ -245,6 +268,28 @@ export default function Camera({ color, existingScore, initialFile, onDone }: Pr
         visible={toast.visible}
         onHide={() => setToast(t => ({ ...t, visible: false }))}
       />
+    </div>
+  )
+}
+
+function MatchGrid({ grid, colorHex }: { grid: boolean[][]; colorHex: string }) {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(5, 30px)',
+      gridTemplateRows: 'repeat(5, 30px)',
+      gap: 4,
+    }}>
+      {grid.map((row, r) =>
+        row.map((matched, c) => (
+          <div key={`${r}-${c}`} style={{
+            width: 30, height: 30, borderRadius: 6,
+            background: matched ? colorHex : 'var(--border)',
+            boxShadow: matched ? `0 2px 6px ${colorHex}55` : 'none',
+            transition: 'background 0.2s',
+          }} />
+        ))
+      )}
     </div>
   )
 }

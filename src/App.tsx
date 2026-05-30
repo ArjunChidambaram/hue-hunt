@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { useRef, useState, type ChangeEvent } from 'react'
 import { palette } from './lib/palette'
 import { getTodayColor } from './lib/seed'
@@ -44,18 +45,24 @@ export default function App() {
       {/* Desktop gate — hidden on mobile via CSS, covers everything on wide screens */}
       <div className="desktop-gate">
         <div style={{
-          width: 72, height: 72, borderRadius: 18,
+          width: 64, height: 64, borderRadius: 16,
           background: todayColor.hex,
           boxShadow: `0 8px 32px ${todayColor.hex}55`,
         }} />
-        <div>
-          <p style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>Open on your phone 📱</p>
-          <p style={{ color: 'var(--fg-muted)', fontSize: 16, maxWidth: 340, lineHeight: 1.6 }}>
-            Hue Hunt is a mobile camera game — you need to go out and photograph today's colour in the real world.
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: 26, fontWeight: 700, marginBottom: 8 }}>Open on your phone 📱</p>
+          <p style={{ color: 'var(--fg-muted)', fontSize: 15, maxWidth: 320, lineHeight: 1.6 }}>
+            Hue Hunt is a mobile camera game — go find today's colour in the real world and photograph it.
           </p>
         </div>
-        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--fg-subtle)' }}>
-          Scan the QR code or type the URL on your phone.
+        {/* QR code pointing to the live site */}
+        <img
+          src={`${import.meta.env.BASE_URL}qr.png`}
+          alt="QR code to open Hue Hunt on your phone"
+          style={{ width: 180, height: 180, borderRadius: 16, imageRendering: 'pixelated' }}
+        />
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--fg-muted)' }}>
+          arjunchidambaram.github.io/hue-hunt
         </p>
       </div>
 

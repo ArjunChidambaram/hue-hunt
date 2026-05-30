@@ -16,7 +16,15 @@ const todayColor = getTodayColor(palette)
 export default function App() {
   const [tab, setTab] = useState<Tab>('today')
   const [cameraFile, setCameraFile] = useState<File | null>(null)
-  const [showHowToPlay, setShowHowToPlay] = useState(false)
+  // Show on first ever visit; localStorage flag persists across refreshes
+  const [showHowToPlay, setShowHowToPlay] = useState(
+    () => !localStorage.getItem('howToPlaySeen')
+  )
+
+  const closeHowToPlay = () => {
+    localStorage.setItem('howToPlaySeen', '1')
+    setShowHowToPlay(false)
+  }
   const [refreshKey, setRefreshKey] = useState(0)
   const [existingScore, setExistingScore] = useState<number | null>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
@@ -80,7 +88,7 @@ export default function App() {
         <Today
           color={todayColor}
           onFindIt={openCamera}
-          onHowToPlay={() => setShowHowToPlay(true)}
+          onHowToPlay={() => setShowHowToPlay(true)}  // ? button always works
           refreshKey={refreshKey}
         />
       )}
@@ -103,7 +111,7 @@ export default function App() {
         visible={showHowToPlay}
         todayColorName={todayColor.name}
         todayColorHex={todayColor.hex}
-        onClose={() => setShowHowToPlay(false)}
+        onClose={closeHowToPlay}
       />
     </>
   )

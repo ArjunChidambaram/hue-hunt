@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { useEffect, useRef, useState } from 'react'
 import { palette } from '../lib/palette'
 import { getColorForDate } from '../lib/seed'
@@ -218,6 +219,25 @@ export default function Streak() {
             sub={bestFind ? bestFind.colorName : ''}
           />
         </div>
+      </div>
+
+      {/* Share section */}
+      <div style={{
+        padding: '0 20px 40px',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+        borderTop: '1px solid var(--border)', marginTop: 8, paddingTop: 28,
+      }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Share the game
+        </p>
+        <img
+          src={`${import.meta.env.BASE_URL}qr.png`}
+          alt="QR code"
+          style={{ width: 140, height: 140, borderRadius: 12, imageRendering: 'pixelated' }}
+        />
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--fg-subtle)', textAlign: 'center' }}>
+          arjunchidambaram.github.io/hue-hunt
+        </p>
       </div>
     </div>
   )

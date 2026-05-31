@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { palette } from '../lib/palette'
 import { getColorForDate } from '../lib/seed'
 import { getAllFinds, getCurrentStreak, type Find } from '../lib/db'
-import { utcDateString } from '../lib/utils'
+import { todayLocal, localDateString } from '../lib/utils'
 
 interface CellData {
   dateStr: string
@@ -30,7 +30,7 @@ export default function Streak() {
     getAllFinds().then(f => { setFinds(f); setLoading(false) })
   }, [])
 
-  const today = utcDateString(new Date())
+  const today = todayLocal()
   const { current: currentStreak, longest: longestStreak } = getCurrentStreak(finds)
   const findMap = new Map(finds.map(f => [f.date, f]))
 
@@ -57,7 +57,7 @@ export default function Streak() {
   d.setUTCDate(d.getUTCDate() - startDow)
 
   for (let i = 0; i < totalCells; i++) {
-    const ds = utcDateString(d)
+    const ds = localDateString(d)
     if (d.getUTCFullYear() === year) {
       cells[i] = { dateStr: ds, isToday: ds === today, isFuture: ds > today, find: findMap.get(ds) }
     }

@@ -1,10 +1,10 @@
 import { get, set, del, keys } from 'idb-keyval'
-import { utcDateString } from './utils'
+import { localDateString, todayLocal } from './utils'
 
 // ─── Types ─────────────────────────────────────────────────
 
 export interface Find {
-  date: string          // "2026-06-15" UTC — primary key
+  date: string          // "2026-06-15" local date — primary key
   colorIndex: number
   colorName: string
   matchScore: number    // 0.0–1.0 best score for the day
@@ -77,7 +77,7 @@ export async function saveFindIfBetter(find: Find): Promise<boolean> {
 }
 
 export async function getTodayFind(): Promise<Find | undefined> {
-  return dbGet<Find>(`find:${utcDateString(new Date())}`)
+  return dbGet<Find>(`find:${todayLocal()}`)
 }
 
 export async function getFindForDate(dateStr: string): Promise<Find | undefined> {
@@ -96,12 +96,12 @@ export async function getAllFinds(): Promise<Find[]> {
 export async function saveTodayPhoto(blob: Blob, pHash: string): Promise<void> {
   // Resize blob before saving to keep storage minimal (~50–100 KB)
   const resized = await resizeBlobTo400(blob)
-  await dbSet('today-photo', { date: utcDateString(new Date()), blob: resized, pHash })
+  await dbSet('today-photo', { date: todayLocal(), blob: resized, pHash })
 }
 
 export async function getTodayPhoto(): Promise<TodayPhoto | null> {
   const entry = await dbGet<TodayPhoto>('today-photo')
-  if (!entry || entry.date !== utcDateString(new Date())) {
+  if (!entry || entry.date !== todayLocal()) {
     await dbDel('today-photo')
     return null
   }
@@ -122,31 +122,29 @@ export async function getTodayPhotoHash(): Promise<string | null> {
 
 export function getCurrentStreak(finds: Find[]): { current: number; longest: number } {
   const dateSet = new Set(finds.map(f => f.date))
-  const today = utcDateString(new Date())
+  const today = todayLocal()
 
+  // Current streak: walk backwards from today
   let current = 0
   let date = today
   while (dateSet.has(date)) {
     current++
-    const d = new Date(date + 'T00:00:00Z')
-    d.setUTCDate(d.getUTCDate() - 1)
-    date = utcDateString(d)
+    const [y, mo, d] = date.split('-').map(Number)
+    date = localDateString(new Date(y, mo - 1, d - 1))
   }
 
-  // Longest streak: scan all finds sorted
+  // Longest streak: scan sorted dates
   const sorted = [...dateSet].sort()
   let longest = 0
   let run = 1
   for (let i = 1; i < sorted.length; i++) {
-    const prev = new Date(sorted[i - 1] + 'T00:00:00Z')
-    const curr = new Date(sorted[i] + 'T00:00:00Z')
-    const diffDays = (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)
-    if (diffDays === 1) {
-      run++
-    } else {
-      longest = Math.max(longest, run)
-      run = 1
-    }
+    const [py, pmo, pd] = sorted[i - 1].split('-').map(Number)
+    const [cy, cmo, cd] = sorted[i].split('-').map(Number)
+    const prev = new Date(py, pmo - 1, pd)
+    const curr = new Date(cy, cmo - 1, cd)
+    const diffDays = Math.round((curr.getTime() - prev.getTime()) / 86400000)
+    run = diffDays === 1 ? run + 1 : 1
+    longest = Math.max(longest, run)
   }
   if (sorted.length > 0) longest = Math.max(longest, run)
 

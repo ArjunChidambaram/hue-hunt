@@ -1,26 +1,34 @@
-// ─── Date helpers (all UTC) ───────────────────────────────
+// ─── Date helpers ────────────────────────────────────────────
+// Uses LOCAL date so the color and streak roll over at local midnight,
+// not UTC midnight. Two users in different timezones may see different
+// colors, but each user's experience is consistent with their clock.
 
-export function utcDateString(date: Date): string {
-  const y = date.getUTCFullYear()
-  const m = String(date.getUTCMonth() + 1).padStart(2, '0')
-  const d = String(date.getUTCDate()).padStart(2, '0')
+export function localDateString(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
   return `${y}-${m}-${d}`
 }
 
+export function todayLocal(): string {
+  return localDateString(new Date())
+}
+
+// Keep for callers that still reference this — now returns local date
+export function utcDateString(date: Date): string {
+  return localDateString(date)
+}
+
 export function previousDay(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00Z')
-  d.setUTCDate(d.getUTCDate() - 1)
-  return utcDateString(d)
+  const [y, mo, d] = dateStr.split('-').map(Number)
+  const dt = new Date(y, mo - 1, d - 1)
+  return localDateString(dt)
 }
 
 export function nextDay(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00Z')
-  d.setUTCDate(d.getUTCDate() + 1)
-  return utcDateString(d)
-}
-
-export function todayUTC(): string {
-  return utcDateString(new Date())
+  const [y, mo, d] = dateStr.split('-').map(Number)
+  const dt = new Date(y, mo - 1, d + 1)
+  return localDateString(dt)
 }
 
 // ─── Color math ───────────────────────────────────────────

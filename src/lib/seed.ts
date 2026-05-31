@@ -7,8 +7,8 @@ import { type Color } from './palette'
 
 export function getTodayColor(palette: Color[]): Color {
   const now = new Date()
-  const year = now.getUTCFullYear()
-  const start = new Date(Date.UTC(year, 0, 0))
+  const year = now.getFullYear()           // local year
+  const start = new Date(year, 0, 0)       // local Dec 31 of prev year
   const diff = now.getTime() - start.getTime()
   const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24))
 

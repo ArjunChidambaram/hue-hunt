@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback, type ChangeEvent } from 'reac
 import { type Color } from '../lib/palette'
 import { scoreImage, scoreImageGrid, checkBrightness } from '../lib/scorer'
 import { saveFindIfBetter, saveTodayPhoto, getTodayPhotoHash, getAllFinds, getCurrentStreak, type Find } from '../lib/db'
-import { computePHash, isSamePhoto, utcDateString } from '../lib/utils'
+import { computePHash, isSamePhoto, todayLocal } from '../lib/utils'
 import { generateShareText, handleShare } from '../lib/share'
 import ScoreRing from '../components/ScoreRing'
 import Toast from '../components/Toast'
@@ -71,7 +71,7 @@ export default function Camera({ color, existingScore, initialFile, onDone }: Pr
       if (score >= ACCEPT_THRESHOLD && brightness === null) {
         grid = scoreImageGrid(pixelData, 200, 200, target, color.category)
         const find: Find = {
-          date: utcDateString(new Date()),
+          date: todayLocal(),
           colorIndex: color.index,
           colorName: color.name,
           matchScore: score,

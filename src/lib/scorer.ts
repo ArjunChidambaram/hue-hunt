@@ -22,7 +22,12 @@ export function scoreImage(
   const totalPixels = width * height
   let matches = 0
 
-  const correction = estimateWhiteBalance(pixelData, totalPixels)
+  // Skip white-balance correction for chromatic targets — the "cast" is the signal.
+  const satTolerance = Math.max(tolerance.sat, target.s * 0.5)
+  const useWB = target.s < 40
+  const correction = useWB
+    ? estimateWhiteBalance(pixelData, totalPixels)
+    : { r: 0, g: 0, b: 0 }
 
   for (let i = 0; i < sampleCount; i++) {
     const idx = Math.floor(Math.random() * totalPixels) * 4
@@ -38,7 +43,7 @@ export function scoreImage(
 
     if (
       hueDiff <= tolerance.hue &&
-      Math.abs(hsl.s - target.s) <= tolerance.sat &&
+      Math.abs(hsl.s - target.s) <= satTolerance &&
       Math.abs(hsl.l - target.l) <= tolerance.light
     ) {
       matches++
@@ -58,7 +63,11 @@ export function scoreImageGrid(
   cellThreshold = 0.15
 ): boolean[][] {
   const tolerance = TOLERANCES[category]
-  const correction = estimateWhiteBalance(pixelData, width * height)
+  const satTolerance = Math.max(tolerance.sat, target.s * 0.5)
+  const useWB = target.s < 40
+  const correction = useWB
+    ? estimateWhiteBalance(pixelData, width * height)
+    : { r: 0, g: 0, b: 0 }
   const grid: boolean[][] = []
 
   for (let row = 0; row < 5; row++) {
@@ -86,7 +95,7 @@ export function scoreImageGrid(
         )
         if (
           hueDiff <= tolerance.hue &&
-          Math.abs(hsl.s - target.s) <= tolerance.sat &&
+          Math.abs(hsl.s - target.s) <= satTolerance &&
           Math.abs(hsl.l - target.l) <= tolerance.light
         ) matches++
       }

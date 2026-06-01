@@ -34,34 +34,35 @@ export default function Streak() {
   const { current: currentStreak, longest: longestStreak } = getCurrentStreak(finds)
   const findMap = new Map(finds.map(f => [f.date, f]))
 
-  const year = new Date().getUTCFullYear()
+  const year = new Date().getFullYear()
 
   // Scroll grid so today is always visible — near the right edge with 4 cols of context
   useEffect(() => {
     if (loading || !containerRef.current) return
-    const yrStart = new Date(Date.UTC(year, 0, 1))
-    const dow = (yrStart.getUTCDay() + 6) % 7
-    const todayDt = new Date(today + 'T00:00:00Z')
-    const doy = Math.floor((todayDt.getTime() - yrStart.getTime()) / (1000 * 60 * 60 * 24))
+    const yrStart = new Date(year, 0, 1)
+    const dow = (yrStart.getDay() + 6) % 7
+    const [ty, tm, td] = today.split('-').map(Number)
+    const todayDt = new Date(ty, tm - 1, td)
+    const doy = Math.round((todayDt.getTime() - yrStart.getTime()) / (1000 * 60 * 60 * 24))
     const todayCol = Math.floor((dow + doy) / 7)
     const colWidth = 10 + 2  // CELL + GAP
     containerRef.current.scrollLeft = Math.max(0, todayCol * colWidth - containerRef.current.clientWidth + 4 * colWidth)
   }, [loading, today, year])
 
-  const yearStart = new Date(Date.UTC(year, 0, 1))
-  const startDow = (yearStart.getUTCDay() + 6) % 7
+  // Build the grid using LOCAL dates throughout, consistent with todayLocal() and stored finds.
+  const yearStart = new Date(year, 0, 1)
+  const startDow = (yearStart.getDay() + 6) % 7
   const totalCells = 53 * 7
   const cells: (CellData | null)[] = Array(totalCells).fill(null)
 
-  let d = new Date(yearStart)
-  d.setUTCDate(d.getUTCDate() - startDow)
+  const d = new Date(year, 0, 1 - startDow)  // back up to the Monday of the first week
 
   for (let i = 0; i < totalCells; i++) {
     const ds = localDateString(d)
-    if (d.getUTCFullYear() === year) {
+    if (d.getFullYear() === year) {
       cells[i] = { dateStr: ds, isToday: ds === today, isFuture: ds > today, find: findMap.get(ds) }
     }
-    d.setUTCDate(d.getUTCDate() + 1)
+    d.setDate(d.getDate() + 1)
   }
 
   const colorsFound = finds.length

@@ -4,7 +4,7 @@
 // IndexedDB (streaks/finds) is a completely separate storage system —
 // this cache is never touched by SW cache management.
 
-const CACHE = 'hue-hunt-v1'
+const CACHE = 'hue-hunt-v2'
 
 const PRECACHE = [
   '/manifest.json',

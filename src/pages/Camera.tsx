@@ -3,7 +3,7 @@ import { type Color } from '../lib/palette'
 import { scoreImage, scoreImageGrid, checkBrightness } from '../lib/scorer'
 import { saveFindIfBetter, saveTodayPhoto, getTodayPhotoHash, getAllFinds, getCurrentStreak, type Find } from '../lib/db'
 import { computePHash, isSamePhoto, todayLocal } from '../lib/utils'
-import { generateShareText, handleShare } from '../lib/share'
+import { generateShareText, generateShareImage, handleShare } from '../lib/share'
 import ScoreRing from '../components/ScoreRing'
 import Toast from '../components/Toast'
 
@@ -79,8 +79,14 @@ export default function Camera({ color, existingScore, initialFile, onDone }: Pr
           grid,
           pHash,
         }
-        const isNewBestFind = await saveFindIfBetter(find)
-        if (isNewBestFind) await saveTodayPhoto(file, pHash)
+        // Save separately so a storage error never prevents showing the result
+        try {
+          const isNewBestFind = await saveFindIfBetter(find)
+          if (isNewBestFind) await saveTodayPhoto(file, pHash)
+        } catch (saveErr) {
+          console.error('Storage error — score may not persist:', saveErr)
+          setToast({ visible: true, message: "Couldn't save score. Try again." })
+        }
       }
 
       setScreen({ kind: 'result', score, objectUrl, brightness, grid })
@@ -110,6 +116,24 @@ export default function Camera({ color, existingScore, initialFile, onDone }: Pr
     if (screen.kind !== 'result' || !screen.grid) return
     const allFinds = await getAllFinds()
     const { current: streak } = getCurrentStreak(allFinds)
+
+    // Try sharing as a PNG image (supported on iOS 15+ and Android Chrome)
+    try {
+      const blob = await generateShareImage(color, screen.score, streak, screen.grid)
+      if (blob) {
+        const file = new File([blob], 'hue-hunt.png', { type: 'image/png' })
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file] })
+          setToast({ visible: true, message: 'Shared! 🎉' })
+          return
+        }
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
+      // Fall through to text share
+    }
+
+    // Fallback: copy emoji grid text to clipboard
     const text = generateShareText(color, screen.score, streak, screen.grid)
     const result = await handleShare(text)
     setToast({ visible: true, message: result === 'shared' ? 'Shared! 🎉' : 'Copied! 📋' })

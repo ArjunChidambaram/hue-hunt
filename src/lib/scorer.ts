@@ -40,9 +40,11 @@ export function scoreImage(
       Math.abs(hsl.h - target.h),
       360 - Math.abs(hsl.h - target.h)
     )
+    // When both target and pixel are nearly achromatic, hue is unstable — skip the check
+    const hueOk = (target.s < 20 && hsl.s < 20) || hueDiff <= tolerance.hue
 
     if (
-      hueDiff <= tolerance.hue &&
+      hueOk &&
       Math.abs(hsl.s - target.s) <= satTolerance &&
       Math.abs(hsl.l - target.l) <= tolerance.light
     ) {
@@ -93,8 +95,9 @@ export function scoreImageGrid(
           Math.abs(hsl.h - target.h),
           360 - Math.abs(hsl.h - target.h)
         )
+        const hueOk = (target.s < 20 && hsl.s < 20) || hueDiff <= tolerance.hue
         if (
-          hueDiff <= tolerance.hue &&
+          hueOk &&
           Math.abs(hsl.s - target.s) <= satTolerance &&
           Math.abs(hsl.l - target.l) <= tolerance.light
         ) matches++
